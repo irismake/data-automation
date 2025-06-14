@@ -15,7 +15,7 @@ class ExcelAutomationApp:
 
         self.csv_path = ""
         # ✅ 기본 txt 경로 지정
-        self.txt_path = os.path.join(os.path.dirname(__file__), "beopjeong-dong_code_data.txt")
+        self.txt_path = os.path.join(os.path.dirname(__file__), "legal_zone_code_data.txt")
         self.selected_region = tk.StringVar()
 
         self.create_widgets()
