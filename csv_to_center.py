@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-def center_coordinates(file_path, output_path=None):
+def coord_to_center(file_path, output_path=None):
     df = pd.read_csv(file_path)
 
     if 'x' not in df.columns or 'y' not in df.columns:

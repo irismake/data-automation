@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-def convert_to_swift(file_path, region_code=None, output_path=None):
+def convert_csv_to_swift(file_path, region_code=None, output_path=None):
     df = pd.read_csv(file_path)
 
     # 필요한 컬럼이 있는지 확인

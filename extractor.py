@@ -1,6 +1,6 @@
 import pandas as pd
 
-def filter_txt(txt_path, selected_region, save_path):
+def filter_zone_in_txt(txt_path, selected_region, save_path):
     df = pd.read_csv(txt_path, sep="\t", dtype=str)
 
     # 조건 필터링: 반드시 각 조건 괄호로 감싸야 함!

@@ -7,7 +7,7 @@ import pandas as pd
 import cleaner
 import comparer
 import extractor
-import center_csv
+import csv_to_center
 import csv_to_swift
 
 class ExcelAutomationApp:
@@ -54,8 +54,8 @@ class ExcelAutomationApp:
         region_combo.pack(pady=5)
 
         tk.Button(self.root, text="실행 (정리 + 비교)", command=self.run_processing).pack(pady=10)
-        tk.Button(self.root, text="중앙 정렬 CSV 저장", command=self.center_csv_file).pack(pady=10)
-        tk.Button(self.root, text="Swift 코드로 저장", command=self.convert_to_swift).pack(pady=10)
+        tk.Button(self.root, text="중앙 정렬 CSV 저장", command=self.coord_to_center).pack(pady=10)
+        tk.Button(self.root, text="Swift 코드로 저장", command=self.convert_csv_to_swift).pack(pady=10)
 
     def load_csv(self):
         path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -69,7 +69,7 @@ class ExcelAutomationApp:
             return
 
         filtered_path = f"filtered_{self.selected_region.get()}.txt"
-        filtered_df = extractor.filter_txt(self.txt_path, self.selected_region.get(), filtered_path)
+        filtered_df = extractor.filter_zone_in_txt(self.txt_path, self.selected_region.get(), filtered_path)
 
         cleaned_df = cleaner.clean_csv(self.csv_path)
         missing_csv, missing_txt = comparer.compare_bidirectional(cleaned_df, filtered_df)
@@ -79,25 +79,25 @@ class ExcelAutomationApp:
 
         messagebox.showinfo("완료", f"처리 완료!\n{filtered_path}\n누락_from_csv.csv\n누락_from_txt.csv")
 
-    def center_csv_file(self):
+    def coord_to_center(self):
         if not self.csv_path:
             messagebox.showwarning("경고", "CSV 파일을 먼저 선택하세요.")
             return
 
         try:
-            output_path = center_csv.center_coordinates(self.csv_path)
+            output_path = csv_to_center.coord_to_center(self.csv_path)
             messagebox.showinfo("완료", f"중앙 정렬된 CSV 저장됨:\n{output_path}")
         except Exception as e:
             messagebox.showerror("오류", str(e))
 
-    def convert_to_swift(self):
+    def convert_csv_to_swift(self):
         if not self.csv_path or not self.selected_region.get():
             messagebox.showwarning("경고", "CSV 파일과 시/도를 선택하세요.")
             return
 
         try:
             region_code = self.region_code_map.get(self.selected_region.get())
-            output_path = csv_to_swift.convert_to_swift(self.csv_path, region_code)
+            output_path = csv_to_swift.convert_csv_to_swift(self.csv_path, region_code)
             messagebox.showinfo("완료", f"Swift 코드 파일 생성됨:\n{output_path}")
         except Exception as e:
             messagebox.showerror("오류", str(e))
