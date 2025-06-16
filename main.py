@@ -9,35 +9,36 @@ import comparer
 import extractor
 import csv_to_center
 import csv_to_swift
+import zone_code_trimmer
 
 class ExcelAutomationApp:
     def __init__(self, root):
         self.root = root
         self.root.title("CSV 자동화 도구")
-        self.root.geometry("500x500")
+        self.root.geometry("500x600")
 
         self.csv_path = ""
         self.txt_path = os.path.join(os.path.dirname(__file__), "legal_zone_code_data.txt")
         self.selected_region = tk.StringVar()
 
         self.region_code_map = {
-            "서울특별시": 1100000000,
-            "부산광역시": 2600000000,
-            "대구광역시": 2700000000,
-            "인천광역시": 2800000000,
-            "광주광역시": 2900000000,
-            "대전광역시": 3000000000,
-            "울산광역시": 3100000000,
-            "세종특별자치시": 3611000000,
-            "경기도": 4100000000,
-            "강원특별자치도": 4200000000,
-            "충청북도": 4300000000,
-            "충청남도": 4400000000,
-            "전북특별자치도": 5200000000,
-            "전라남도": 4600000000,
-            "경상북도": 4700000000,
-            "경상남도": 4800000000,
-            "제주특별자치도": 5000000000
+            "서울특별시": 11,
+            "부산광역시": 26,
+            "대구광역시": 27,
+            "인천광역시": 28,
+            "광주광역시": 29,
+            "대전광역시": 30,
+            "울산광역시": 31,
+            "세종특별자치시": 36,
+            "경기도": 41,
+            "강원특별자치도": 42,
+            "충청북도": 43,
+            "충청남도": 44,
+            "전북특별자치도": 52,
+            "전라남도": 46,
+            "경상북도": 47,
+            "경상남도": 48,
+            "제주특별자치도": 50
         }
 
         self.create_widgets()
@@ -56,6 +57,12 @@ class ExcelAutomationApp:
         tk.Button(self.root, text="실행 (정리 + 비교)", command=self.run_processing).pack(pady=10)
         tk.Button(self.root, text="중앙 정렬 CSV 저장", command=self.coord_to_center).pack(pady=10)
         tk.Button(self.root, text="Swift 코드로 저장", command=self.convert_csv_to_swift).pack(pady=10)
+
+        # zone_code 자르기 관련 위젯
+        tk.Label(self.root, text="zone_code 앞 몇 자리만 남길지 입력").pack()
+        self.trim_digits = tk.Entry(self.root)
+        self.trim_digits.pack(pady=5)
+        tk.Button(self.root, text="zone_code 자르기 및 저장", command=self.trim_zone_code).pack(pady=10)
 
     def load_csv(self):
         path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -102,6 +109,16 @@ class ExcelAutomationApp:
         except Exception as e:
             messagebox.showerror("오류", str(e))
 
+    def trim_zone_code(self):
+        if not self.csv_path:
+            messagebox.showwarning("경고", "CSV 파일을 먼저 선택하세요.")
+            return
+        try:
+            digits = int(self.trim_digits.get())
+            output_path = zone_code_trimmer.trim_zone_code(self.csv_path, digits)
+            messagebox.showinfo("완료", f"zone_code 자르기 완료!\n{output_path}")
+        except Exception as e:
+            messagebox.showerror("오류", str(e))
 
 if __name__ == "__main__":
     root = tk.Tk()
