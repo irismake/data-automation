@@ -10,6 +10,7 @@ import extractor
 import csv_to_center
 import csv_to_swift
 import zone_code_trimmer
+import pnus_trimmer
 
 class ExcelAutomationApp:
     def __init__(self, root):
@@ -31,7 +32,7 @@ class ExcelAutomationApp:
             "울산광역시": 31,
             "세종특별자치시": 36,
             "경기도": 41,
-            "강원특별자치도": 42,
+            "강원특별자치도": 51,
             "충청북도": 43,
             "충청남도": 44,
             "전북특별자치도": 52,
@@ -63,6 +64,8 @@ class ExcelAutomationApp:
         self.trim_digits = tk.Entry(self.root)
         self.trim_digits.pack(pady=5)
         tk.Button(self.root, text="zone_code 자르기 및 저장", command=self.trim_zone_code).pack(pady=10)
+        tk.Button(self.root, text="pnus 자르기 및 저장", command=self.trim_pnus_column).pack(pady=10)
+
 
     def load_csv(self):
         path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -119,6 +122,33 @@ class ExcelAutomationApp:
             messagebox.showinfo("완료", f"zone_code 자르기 완료!\n{output_path}")
         except Exception as e:
             messagebox.showerror("오류", str(e))
+
+    def trim_pnus_column(self):
+        if not self.csv_path or not self.selected_region.get():
+            messagebox.showwarning("경고", "CSV 파일과 시/도를 선택하세요.")
+            return
+        try:
+            df = pd.read_csv(self.csv_path)
+            df, non00_pnus = pnus_trimmer.trim_pnus(df)
+
+            region_code = self.region_code_map.get(self.selected_region.get())
+
+            filename = f"{region_code}.csv"
+            output_path = os.path.join(os.path.dirname(self.csv_path), filename)
+            df.to_csv(output_path, index=False)
+
+            msg = f"pnus 정리 완료!\n{output_path}"
+            if non00_pnus:
+                msg += f"\n\n00으로 끝나지 않는 항목 수: {len(non00_pnus)}\n예: {non00_pnus[:5]}..."
+            messagebox.showinfo("완료", msg)
+        except Exception as e:
+            messagebox.showerror("오류", str(e))
+
+
+
+
+
+
 
 if __name__ == "__main__":
     root = tk.Tk()
