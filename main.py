@@ -11,6 +11,7 @@ import csv_to_center
 import csv_to_swift
 import zone_code_trimmer
 import pnus_trimmer
+import data_to_csv
 
 class ExcelAutomationApp:
     def __init__(self, root):
@@ -55,6 +56,7 @@ class ExcelAutomationApp:
         )
         region_combo.pack(pady=5)
 
+        tk.Button(root, text="PNU 정리 및 저장", command=self.process_pnu_csv).pack(pady=10)
         tk.Button(self.root, text="실행 (정리 + 비교)", command=self.run_processing).pack(pady=10)
         tk.Button(self.root, text="중앙 정렬 CSV 저장", command=self.coord_to_center).pack(pady=10)
         tk.Button(self.root, text="Swift 코드로 저장", command=self.convert_csv_to_swift).pack(pady=10)
@@ -65,6 +67,29 @@ class ExcelAutomationApp:
         self.trim_digits.pack(pady=5)
         tk.Button(self.root, text="zone_code 자르기 및 저장", command=self.trim_zone_code).pack(pady=10)
         tk.Button(self.root, text="pnus 자르기 및 저장", command=self.trim_pnus_column).pack(pady=10)
+
+
+    def process_pnu_csv(self):
+        if not self.csv_path:
+            messagebox.showwarning("경고", "CSV 파일을 먼저 선택하세요.")
+            return
+
+        try:
+            base, ext = os.path.splitext(self.csv_path)
+            output_path = f"{base}_merged{ext}"
+            invalid_output_path = f"{base}_unmatched_pnus.txt"
+
+            data_to_csv.process_pnu_csv(
+                self.csv_path,
+                output_path,
+                invalid_output_path,
+            )
+            
+            messagebox.showinfo("완료", f"PNU 정리 완료!\n{output_path}")
+        except Exception as e:
+            messagebox.showerror("오류", str(e))
+
+
 
 
     def load_csv(self):
