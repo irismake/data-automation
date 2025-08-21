@@ -13,8 +13,8 @@ def coord_to_center(file_path, output_path=None):
     width = max_x - min_x + 1
     height = max_y - min_y + 1
 
-    shift_x = (25 - width) // 2 - min_x
-    shift_y = (25 - height) // 2 - min_y
+    shift_x = (24 - width) // 2 - min_x
+    shift_y = (24 - height) // 2 - min_y
 
     df['x'] = df['x'] + shift_x
     df['y'] = df['y'] + shift_y
