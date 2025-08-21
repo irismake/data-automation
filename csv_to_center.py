@@ -13,11 +13,22 @@ def coord_to_center(file_path, output_path=None):
     width = max_x - min_x + 1
     height = max_y - min_y + 1
 
-    shift_x = (24 - width) // 2 - min_x
-    shift_y = (24 - height) // 2 - min_y
+    shift_x = (22 - width) // 2 - min_x
+    shift_y = (22 - height) // 2 - min_y
+
+    # ✅ 이동 후 음수 좌표 방지(사전 체크)
+    new_min_x = min_x + shift_x
+    new_min_y = min_y + shift_y
+    if new_min_x < 0 or new_min_y < 0:
+        raise ValueError(f"중앙 정렬 결과 음수 좌표가 발생합니다: "
+                         f"new_min_x={new_min_x}, new_min_y={new_min_y}")
 
     df['x'] = df['x'] + shift_x
     df['y'] = df['y'] + shift_y
+
+    # ✅ 적용 후 이중 확인(예상치 못한 값 대비)
+    if (df['x'] < 0).any() or (df['y'] < 0).any():
+        raise ValueError("좌표 이동 후 음수 값이 존재합니다.")
 
     if not output_path:
         base, ext = os.path.splitext(file_path)
